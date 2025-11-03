@@ -41,6 +41,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mbolli/datastar-attribute-on-keys.git"
+    "url": "git+https://github.com/mbolli/datastar-attribute-on-keys.git"
   }
 }
