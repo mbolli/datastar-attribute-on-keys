@@ -14,7 +14,7 @@
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
     "build:dev": "node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
-    "test": "NODE_ENV=test node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs && node --test dist/index.test.js",
+    "test": "tsc && node --test dist/index.test.js",
     "test:browser": "python3 -m http.server 8080",
     "prepublishOnly": "pnpm test"
   },

@@ -2,7 +2,6 @@
 // Custom attribute to bind actions to key presses
 
 import type { AttributePlugin } from 'datastar/library/src/engine/types'
-import { beginBatch, endBatch } from 'datastar'
 
 // Auto-register with datastar if available from importmap
 if (typeof window !== 'undefined') {
@@ -12,7 +11,7 @@ if (typeof window !== 'undefined') {
             // @ts-ignore - datastar may be available via importmap at runtime
             const datastar = await import('datastar')
             if (datastar?.attribute) {
-                datastar.attribute(onKeysPlugin())
+                datastar.attribute(onKeysPlugin(datastar.beginBatch, datastar.endBatch))
             }
         } catch (e) {
             // Datastar not available via importmap, plugin needs manual registration
@@ -98,13 +97,14 @@ function matchesKeyCombo(event: KeyboardEvent, keyCombo: string): boolean {
     return true;
 }
 
-export default function onKeysPlugin() {
+export default function onKeysPlugin(beginBatch: () => void, endBatch: () => void): AttributePlugin {
     return {
         name: 'on-keys',
         requirement: {
             value: 'must',
         },
         argNames: ['evt'],
+        returnsValue: true,
         apply({ el, key, mods, rx }: { el: Element; key: string; mods: Map<string, Set<string>>; rx: (event?: Event) => void }) {
             // Parse key combinations from the key parameter
             // Support formats like: "esc", "alt-q", "ctrl-shift-s", "esc.alt-q.enter"
@@ -143,7 +143,6 @@ export default function onKeysPlugin() {
 
                     // Prevent default behavior by default, unless noprevent modifier is used
                     if (!mods.has('noprevent') && typeof key !== 'undefined') {
-                        console.log('Preventing default behavior for key:', key);
                         evt.preventDefault();
                     }
                     if (mods.has('stop')) {
@@ -167,7 +166,6 @@ export default function onKeysPlugin() {
                 once: mods.has('once'),
             }
             const eventType = mods.has('up') ? 'keyup' : 'keydown';
-            console.log('on-keys binding to', eventType, 'on', target, 'for keys', keySpecs);
             
             target.addEventListener(eventType, callback, evtListOpts);
             return () => {

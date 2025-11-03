@@ -7,12 +7,10 @@ A [Datastar](https://data-star.dev) plugin that provides keyboard event binding 
 
 ## About
 
-[Datastar](https://data-star.dev) is a hypermedia-focused framework that brings reactive signals and declarative DOM manipulation to your HTML. While it includes basic event handling, this plugin extends keyboard event capabilities to support:
+[Datastar](https://data-star.dev) is a hypermedia-focused framework that brings reactive signals and declarative DOM manipulation to your HTML. While it includes great event handling, this plugin extends keyboard event capabilities to support:
 
-- **Key combinations** (e.g., `Alt+Q`, `Ctrl+Shift+S`)
-- **Multiple key bindings** (e.g., `Escape,Enter` to trigger on either key)
-- **Global window events** with modifier support
-- **Event prevention** and **capture** options
+- **Key combinations** (e.g., `Alt-Q`, `Ctrl-Shift-S`)
+- **Multiple key bindings** (e.g., `Escape.Enter` to trigger on either key)
 
 ## Installation
 
@@ -59,11 +57,11 @@ This plugin adds an `on-keys` attribute to Datastar that allows you to bind keyb
 ### Key Combinations
 
 ```html
-<div data-on-keys:alt+q="$app.quit()">
+<div data-on-keys:alt-q="$app.quit()">
   <!-- Triggers when Alt+Q is pressed -->
 </div>
 
-<div data-on-keys:ctrl+shift+s="$document.save()">
+<div data-on-keys:ctrl-shift-s="$document.save()">
   <!-- Triggers when Ctrl+Shift+S is pressed -->
 </div>
 ```
@@ -71,31 +69,41 @@ This plugin adds an `on-keys` attribute to Datastar that allows you to bind keyb
 ### Multiple Keys
 
 ```html
-<div data-on-keys:escape,enter="$dialog.close()">
+<div data-on-keys:escape.enter="$dialog.close()">
   <!-- Triggers when either Escape OR Enter is pressed -->
 </div>
 
-<div data-on-keys:space,enter,alt+q="$action.execute()">
+<div data-on-keys:space.enter.alt-q="$action.execute()">
   <!-- Triggers on Space, Enter, or Alt+Q -->
 </div>
 ```
 
-### Global Window Events
+### Global Events (Default)
 
-Use the `window` modifier to listen for key events globally:
+By default, key events are listened for globally on the window:
 
 ```html
-<div data-on-keys:escape__window="$modal.close()">
-  <!-- Listens for Escape key globally, even when element isn't focused -->
+<div data-on-keys:escape="$modal.close()">
+  <!-- Listens for Escape key globally -->
 </div>
+```
+
+### Element-Specific Events
+
+Use the `el` modifier to listen only when the element has focus:
+
+```html
+<input data-on-keys:enter__el="$form.submit()">
+  <!-- Only triggers when this input is focused -->
+</input>
 ```
 
 ### Event Modifiers
 
 The plugin supports several modifiers:
 
-- `window` - Listen on the window instead of the element
-- `prevent` - Call `preventDefault()` on the event
+- `el` - Listen on the element instead of window (requires focus)
+- `noprevent` - Allow default browser behavior (default prevents)
 - `stop` - Call `stopPropagation()` on the event  
 - `up` - Listen for `keyup` instead of `keydown` (default)
 - `capture` - Use capture phase
@@ -103,20 +111,37 @@ The plugin supports several modifiers:
 - `once` - Only trigger once
 
 ```html
-<div data-on-keys:escape__window__prevent="$modal.close()">
-  <!-- Global escape key with preventDefault -->
+<div data-on-keys:tab__noprevent="$counter++">
+  <!-- Count tab presses but still allow tab navigation -->
 </div>
 ```
 
 ## Supported Key Names
 
-The plugin uses JavaScript's standard `KeyboardEvent.key` values:
+### Key Name Mapping
 
+Common key aliases are automatically mapped to standard JavaScript key names:
+
+**Special Keys:**
+- `space` → Space character
+- `enter` / `return` → Enter  
+- `escape` / `esc` → Escape
+- `tab` → Tab
+- `backspace` → Backspace
+- `delete` / `del` → Delete
+
+**Navigation Keys:**
+- `up` → ArrowUp
+- `down` → ArrowDown
+- `left` → ArrowLeft
+- `right` → ArrowRight
+- `pageup` → PageUp
+- `pagedown` → PageDown
+
+**Other Keys:**
 - **Letters**: `a`, `b`, `c`, etc.
 - **Numbers**: `1`, `2`, `3`, etc.
-- **Special keys**: `Escape`, `Enter`, `Space`, `Tab`, `Backspace`, `Delete`
-- **Arrow keys**: `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`
-- **Function keys**: `F1`, `F2`, etc.
+- **Function keys**: `f1`, `f2`, etc. → F1, F2, etc.
 - **Modifiers**: `ctrl`/`control`, `alt`, `shift`, `meta`/`cmd`/`command`
 
 ## Examples
@@ -124,7 +149,7 @@ The plugin uses JavaScript's standard `KeyboardEvent.key` values:
 ### Modal with Escape Key
 
 ```html
-<div class="modal" data-on-keys:escape__window__prevent="$modal.close()">
+<div class="modal" data-on-keys:escape="$modal.close()">
   <!-- Modal content -->
 </div>
 ```
@@ -140,11 +165,11 @@ The plugin uses JavaScript's standard `KeyboardEvent.key` values:
 ### Keyboard Shortcuts
 
 ```html
-<div data-on-keys:ctrl+s__window__prevent="$document.save()">
-  <!-- Ctrl+S to save -->
+<div data-on-keys:ctrl-s="$document.save()">
+  <!-- Ctrl+S to save - global and prevents browser save dialog -->
 </div>
-<div data-on-keys:ctrl+z__window__prevent="$document.undo()">
-  <!-- Ctrl+Z to undo -->
+<div data-on-keys:ctrl-z="$document.undo()">
+  <!-- Ctrl+Z to undo - global and prevents browser undo -->
 </div>
 ```
 
