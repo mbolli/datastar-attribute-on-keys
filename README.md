@@ -1,6 +1,8 @@
 # @mbolli/datastar-attribute-on-keys
 
 [![npm version](https://img.shields.io/npm/v/@mbolli/datastar-attribute-on-keys.svg)](https://www.npmjs.com/package/@mbolli/datastar-attribute-on-keys)
+[![Release](https://github.com/mbolli/datastar-attribute-on-keys/actions/workflows/release.yml/badge.svg)](https://github.com/mbolli/datastar-attribute-on-keys/actions/workflows/release.yml)
+[![GitHub Pages](https://github.com/mbolli/datastar-attribute-on-keys/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/mbolli/datastar-attribute-on-keys/actions/workflows/gh-pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A [Datastar](https://data-star.dev) plugin that provides keyboard event binding with support for key combinations and multiple keys.
