@@ -454,7 +454,7 @@
                 </div>
                 <p>Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to show message:</p>
                 <!-- Multiple keys binding -->
-                <div data-on-keys:enter.tab="$message = 'You pressed a key at ' + new Date().toLocaleTimeString()"></div>
+                <div data-on-keys:enter.tab__noprevent="$message = 'You pressed a key at ' + new Date().toLocaleTimeString()"></div>
                 <button data-on:click="$message = 'Reset at ' + new Date().toLocaleTimeString()">
                     Reset Message
                 </button>
