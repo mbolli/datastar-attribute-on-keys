@@ -19,36 +19,45 @@ jobs:
           fetch-depth: 0
 
       - name: Check for skip release
+        id: check_skip
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           if [[ $COMMIT_MSG == *"[skip release]"* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
             echo "Skipping release due to [skip release] in commit message"
-            exit 0
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Setup Node.js
+        if: steps.check_skip.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install pnpm
+        if: steps.check_skip.outputs.skip != 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Install dependencies
+        if: steps.check_skip.outputs.skip != 'true'
         run: pnpm install
 
       - name: Build and test
+        if: steps.check_skip.outputs.skip != 'true'
         run: pnpm test
 
       - name: Configure Git
+        if: steps.check_skip.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Bump version
+        if: steps.check_skip.outputs.skip != 'true'
         id: version
         run: |
           # Check commit message for version bump type
@@ -72,10 +81,12 @@ jobs:
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Push changes
+        if: steps.check_skip.outputs.skip != 'true'
         run: |
           git push origin master --follow-tags
 
       - name: Create GitHub Release
+        if: steps.check_skip.outputs.skip != 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
@@ -83,6 +94,7 @@ jobs:
           generate_release_notes: true
 
       - name: Publish to npm
+        if: steps.check_skip.outputs.skip != 'true'
         run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
