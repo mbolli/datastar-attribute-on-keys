@@ -14,9 +14,10 @@
   "scripts": {
     "build": "tsc && NODE_ENV=production node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
     "build:dev": "tsc && node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
-    "test": "tsc && node --test dist/index.test.js",
+    "test": "node --test dist/index.test.js",
+    "test:compile": "tsc && node --test dist/index.test.js",
     "test:browser": "python3 -m http.server 8080",
-    "prepublishOnly": "pnpm test"
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "keywords": [
     "datastar",
