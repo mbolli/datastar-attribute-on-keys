@@ -46,7 +46,11 @@ jobs:
         if: steps.check_skip.outputs.skip != 'true'
         run: pnpm install
 
-      - name: Build and test
+      - name: Build project
+        if: steps.check_skip.outputs.skip != 'true'
+        run: pnpm build
+
+      - name: Run tests
         if: steps.check_skip.outputs.skip != 'true'
         run: pnpm test
 
