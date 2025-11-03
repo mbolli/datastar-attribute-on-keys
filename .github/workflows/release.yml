@@ -18,6 +18,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check for skip release
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if [[ $COMMIT_MSG == *"[skip release]"* ]]; then
+            echo "Skipping release due to [skip release] in commit message"
+            exit 0
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
