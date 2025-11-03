@@ -1,6 +1,6 @@
 {
   "name": "@mbolli/datastar-attribute-on-keys",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Datastar plugin for binding keyboard events to actions with support for key combinations",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
