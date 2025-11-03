@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datastar data-on-keys Plugin</title>
+    <meta name="description" content="Interactive demo and documentation for @mbolli/datastar-attribute-on-keys - A Datastar plugin for binding keyboard events to actions with key combinations">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-700: #374151;
+            --gray-900: #1f2937;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-right: 340px;
+        }
+        
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        header p {
+            margin: 0;
+            color: var(--gray-700);
+            font-size: 1.1rem;
+        }
+        
+        .badges {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .badge:hover {
+            background: var(--primary-dark);
+        }
+        
+        .badge.secondary {
+            background: var(--gray-700);
+        }
+        
+        .test-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section h2 {
+            color: var(--gray-900);
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .test-section > p {
+            color: var(--gray-700);
+            margin: 0 0 1.5rem 0;
+        }
+        
+        button {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border: none;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        input, textarea {
+            display: block;
+            width: 100%;
+            padding: 0.625rem;
+            margin: 0.5rem 0;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        input:disabled, textarea:disabled {
+            background: var(--gray-100);
+            cursor: not-allowed;
+        }
+        
+        .status {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            padding: 1.5rem;
+            background: white;
+            border-left: 1px solid var(--gray-200);
+            overflow-y: auto;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status h3 {
+            margin: 0 0 1rem 0;
+            color: var(--gray-900);
+            font-size: 1.25rem;
+        }
+        
+        .status-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-700);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .status-value {
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+        
+        code {
+            background: var(--gray-900);
+            color: var(--gray-50);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+
+        kbd {
+            background: var(--gray-100);
+            padding: 0.2rem 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.85em;
+            color: var(--gray-900);
+        }
+        
+        .counter {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .key-display {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid var(--gray-200);
+        }
+
+        dialog {
+            border: none;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background: white;
+        }
+        
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        dialog[open] {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-right: 2rem;
+            }
+            .status {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status">
+        <h3>📦 Installation</h3>
+        <div class="status-item">
+            <div class="status-label">NPM</div>
+            <code style="display: block; white-space: pre-wrap; word-break: break-all; font-size: 0.7em; padding: 0.5rem;">npm install @mbolli/datastar-attribute-on-keys</code>
+        </div>
+        <div class="status-item">
+            <div class="status-label">Setup</div>
+            <pre style="font-size: 0.65em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-900); color: var(--gray-50); border-radius: 4px; white-space: pre-wrap; word-break: break-all;">&lt;script type="importmap"&gt;
+{
+  "imports": {
+    "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
+  }
+}
+&lt;/script&gt;
+&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@mbolli/datastar-attribute-on-keys@1/dist/index.js"&gt;&lt;/script&gt;</pre>
+        </div>
+        
+        <h3>📊 Live State</h3>
+        <div class="status-item">
+            <div class="status-label">Signals</div>
+            <pre data-json-signals style="font-size: 0.75em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-50); border-radius: 4px;"></pre>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎹 Datastar On-Keys Plugin</h1>
+            <p>Interactive demo showcasing keyboard event binding with key combinations and multiple keys</p>
+            <div class="badges">
+                <a href="https://github.com/mbolli/datastar-attribute-on-keys" class="badge" target="_blank">GitHub</a>
+                <a href="https://www.npmjs.com/package/@mbolli/datastar-attribute-on-keys" class="badge" target="_blank">npm</a>
+                <a href="https://data-star.dev" class="badge secondary" target="_blank">Datastar Docs</a>
+            </div>
+        </header>
+
+        <!-- Usage Documentation -->
+        <section class="test-section">
+            <h2>📖 Usage Guide</h2>
+            <p>The <code>data-on-keys</code> attribute allows you to bind keyboard events to Datastar actions with powerful key combinations and modifiers.</p>
+            
+            <h3>Basic Syntax</h3>
+            <code>data-on-keys[:key-spec][__modifier1][__modifier2]="action"</code>
+            
+            <h3>Key Specifications</h3>
+            <div style="margin: 1rem 0;">
+                <p>The <code>key-spec</code> defines which keys trigger the action. It can be:</p>
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><strong>Single keys:</strong> <code>space</code>, <code>enter</code>, <code>escape</code>, <code>tab</code>, <code>f1</code>, <code>a</code></li>
+                    <li><strong>Key combinations:</strong> <code>ctrl-k</code>, <code>alt-enter</code>, <code>shift-space</code>, <code>meta-s</code>, <code>ctrl-shift-z</code></li>
+                    <li><strong>Multiple options:</strong> <code>enter.tab</code>, <code>escape.f1.ctrl-q</code> (any of these will trigger)</li>
+                    <li><strong>Any key:</strong> omit the key-spec entirely to capture all key presses</li>
+                </ul>
+            </div>
+            
+            <h3>Key Name Mapping</h3>
+            <div style="margin: 1rem 0;">
+                <p>Common key aliases are automatically mapped to standard JavaScript key names:</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9em;">
+                    <div>
+                        <h4 style="margin: 0.5rem 0; font-size: 1em;">Special Keys</h4>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem; line-height: 1.4;">
+                            <li><code>space</code> → Space character</li>
+                            <li><code>enter</code> / <code>return</code> → Enter</li>
+                            <li><code>escape</code> / <code>esc</code> → Escape</li>
+                            <li><code>tab</code> → Tab</li>
+                            <li><code>backspace</code> → Backspace</li>
+                            <li><code>delete</code> / <code>del</code> → Delete</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0.5rem 0; font-size: 1em;">Navigation Keys</h4>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem; line-height: 1.4;">
+                            <li><code>up</code> → ArrowUp</li>
+                            <li><code>down</code> → ArrowDown</li>
+                            <li><code>left</code> → ArrowLeft</li>
+                            <li><code>right</code> → ArrowRight</li>
+                            <li><code>pageup</code> → PageUp</li>
+                            <li><code>pagedown</code> → PageDown</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="font-size: 0.9em; color: var(--gray-700); margin-top: 0.5rem;">
+                    <strong>Note:</strong> Function keys (<code>f1</code>-<code>f12</code>), letter keys (<code>a</code>-<code>z</code>), and other standard keys work as expected.
+                </p>
+            </div>
+            
+            <h3>Target Modifiers</h3>
+            <div style="margin: 1rem 0;">
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><strong>Default (no modifier)</strong> - Binds to <kbd>window</kbd> (global)</li>
+                    <li><code>__el</code> - Binds to the element itself (requires focus)</li>
+                </ul>
+            </div>
+            
+            <h3>Behavior Modifiers</h3>
+            <div style="margin: 1rem 0;">
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><strong>Default</strong> - Prevents default browser behavior (<code>preventDefault()</code>)</li>
+                    <li><code>__noprevent</code> - Allows default browser behavior</li>
+                    <li><code>__stop</code> - Stops event propagation (<code>stopPropagation()</code>)</li>
+                </ul>
+            </div>
+            
+            <h3>Event Timing</h3>
+            <div style="margin: 1rem 0;">
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><strong>Default</strong> - Triggers on <code>keydown</code></li>
+                    <li><code>__up</code> - Triggers on <code>keyup</code></li>
+                </ul>
+            </div>
+            
+            <h3>Event Listener Options</h3>
+            <div style="margin: 1rem 0;">
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><code>__capture</code> - Use capture phase</li>
+                    <li><code>__passive</code> - Passive event listener</li>
+                    <li><code>__once</code> - Remove listener after first trigger</li>
+                </ul>
+            </div>
+            
+            <h3>Common Examples</h3>
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <pre style="margin: 0; font-size: 0.9em;"><code>&lt;!-- Global shortcuts --&gt;
+&lt;div data-on-keys:ctrl-s="saveDocument()"&gt;&lt;/div&gt;
+&lt;div data-on-keys:escape="closeModal()"&gt;&lt;/div&gt;
+
+&lt;!-- Element-specific --&gt;
+&lt;input data-on-keys:enter__el="submitForm()"&gt;
+&lt;textarea data-on-keys:ctrl-enter__el="submit()"&gt;&lt;/textarea&gt;
+
+&lt;!-- Allow default behavior --&gt;
+&lt;div data-on-keys:tab__noprevent="logTab()"&gt;&lt;/div&gt;
+
+&lt;!-- Multiple triggers --&gt;
+&lt;div data-on-keys:escape.f1.ctrl-h="showHelp()"&gt;&lt;/div&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- Test 1: Single Key Binding -->
+        <div class="test-section">
+            <h2>Test 1: Single Key - Space Counter</h2>
+            <p>Uses <code>data-on-keys:space</code> to increment counter on spacebar (prevents page scroll by default).</p>
+            
+            <div data-signals:counter="0">
+                <div class="counter" data-text="$counter"></div>
+                <p>Press <kbd>Space</kbd> to increment counter:</p>
+                <!-- Single key binding - prevent is now default -->
+                <div data-on-keys:space="$counter++"></div>
+                <button data-on:click="$counter = 0">Reset Counter</button>
+                <button data-on:click="$counter += 10">Add 10</button>
+            </div>
+        </div>
+
+        <!-- Test 2: Key Combination - Safe Combination -->
+        <div class="test-section">
+            <h2>Test 2: Key Combination - Ctrl+K</h2>
+            <p>Uses <code>data-on-keys:ctrl-k</code> for a global keyboard shortcut (window is now default).</p>
+
+            <div data-signals:enabled="false">
+                <p>Press <kbd>Ctrl + K</kbd> anywhere to toggle mode:</p>
+                <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px; margin: 1rem 0;">
+                    Mode: <strong data-text="$enabled ? 'ENABLED' : 'DISABLED'"></strong>
+                </div>
+                <!-- Safe key combination binding - window is now default -->
+                <div data-on-keys:ctrl-k="$enabled = !$enabled"></div>
+                <button data-on:click="$enabled = !$enabled">
+                    Toggle Mode (Button Alternative)
+                </button>
+            </div>
+        </div>
+
+        <!-- Test 3: Multiple Keys -->
+        <div class="test-section">
+            <h2>Test 3: Multiple Keys - Enter or Tab</h2>
+            <p>Uses <code>data-on-keys:enter.tab</code> to trigger on multiple keys.</p>
+            
+            <div data-signals:message="'Press Enter or Tab to update this message!'">
+                <div class="key-display">
+                    <div data-text="$message"></div>
+                </div>
+                <p>Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to show message:</p>
+                <!-- Multiple keys binding -->
+                <div data-on-keys:enter.tab="$message = 'You pressed a key at ' + new Date().toLocaleTimeString()"></div>
+                <button data-on:click="$message = 'Reset at ' + new Date().toLocaleTimeString()">
+                    Reset Message
+                </button>
+            </div>
+        </div>
+
+        <!-- Test 4: Global Window Events -->
+        <div class="test-section">
+            <h2>Test 4: Global Events - Modal Control</h2>
+            <p>Uses <code>data-on-keys:f1</code> to open modal and <code>data-on-keys:escape</code> to close it (window is now default).</p>
+            
+            <div>
+                <p>Press <kbd>F1</kbd> anywhere to open modal, <kbd>Escape</kbd> to close it:</p>
+                <button data-on:click="document.getElementById('keyboardModal').showModal()">Open Modal (Button)</button>
+                
+                <!-- Global key bindings - window is now default -->
+                <div data-on-keys:f1="document.getElementById('keyboardModal').showModal()"></div>
+                <div data-on-keys:escape="document.getElementById('keyboardModal').close()"></div>
+
+                <!-- Dialog Modal -->
+                <dialog id="keyboardModal">
+                    <h3>🎹 Keyboard-Controlled Modal</h3>
+                    <p>This modal was opened with <kbd>F1</kbd> and can be closed with <kbd>Escape</kbd> or by clicking the button below.</p>
+                    <button data-on:click="document.getElementById('keyboardModal').close()">Close Modal</button>
+                </dialog>
+            </div>
+        </div>
+
+        <!-- Test 5: Global Key Monitor -->
+        <div class="test-section">
+            <h2>Test 5: Global Key Monitor</h2>
+            <p>Uses <code>data-on-keys</code> to capture any key press globally (prevents default to avoid conflicts).</p>
+            
+            <div data-signals:last-key="'none'">
+                <div class="key-display">
+                    Last key pressed: <strong data-text="$lastKey"></strong>
+                </div>
+                <p>Press any key anywhere on the page to see it captured:</p>
+                <!-- Capture any key press globally - prevents default to avoid browser shortcuts -->
+                <div data-on-keys="$lastKey = event.key"></div>
+                <button data-on:click="$lastKey = 'none'">Clear</button>
+            </div>
+        </div>
+
+        <!-- Test 6: Element-Specific Binding -->
+        <div class="test-section">
+            <h2>Test 6: Element-Specific Key Binding</h2>
+            <p>Uses <code>data-on-keys:ctrl-enter__el</code> to capture Ctrl+Enter key only when the input has focus.</p>
+            
+            <div data-signals:input-message="'Type in the input and press Ctrl+Enter'">
+                <div class="key-display">
+                    <div data-text="$inputMessage"></div>
+                </div>
+                <p>Focus this input and press <kbd>Ctrl + Enter</kbd> (only works when input is focused):</p>
+                <input 
+                    type="text" 
+                    placeholder="Type something and press Ctrl+Enter..." 
+                    data-on-keys:ctrl-enter__el="$inputMessage = 'You pressed Ctrl+Enter in the input: ' + event.target.value + ' at ' + new Date().toLocaleTimeString()"
+                />
+                <button data-on:click="$inputMessage = 'Reset at ' + new Date().toLocaleTimeString()">
+                    Reset Message
+                </button>
+            </div>
+        </div>
+
+        <!-- Test 7: Allow Default Behavior -->
+        <div class="test-section">
+            <h2>Test 7: Allow Default Behavior</h2>
+            <p>Uses <code>data-on-keys:tab__noprevent</code> to capture Tab key but still allow normal tab navigation.</p>
+            
+            <div data-signals:tab-count="0">
+                <div class="counter" data-text="$tabCount"></div>
+                <p>Tab through these inputs - the counter will increment but tab navigation still works:</p>
+                <!-- Allow default tab behavior while still counting -->
+                <div data-on-keys:tab__noprevent="$tabCount++"></div>
+                <input type="text" placeholder="First input">
+                <input type="text" placeholder="Second input">
+                <input type="text" placeholder="Third input">
+                <button data-on:click="$tabCount = 0">Reset Tab Counter</button>
+            </div>
+        </div>
+
+        <!-- Test 8: Keyup Events -->
+        <div class="test-section">
+            <h2>Test 8: Keyup Events</h2>
+            <p>Uses <code>data-on-keys:space__up</code> to trigger on key release instead of key press.</p>
+            
+            <div data-signals='{ "keyEvents": { "down": 0, "up": 0 } }'>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                    <div style="text-align: center;">
+                        <div class="counter" data-text="$keyEvents.down"></div>
+                        <div>Keydown Events</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="counter" data-text="$keyEvents.up"></div>
+                        <div>Keyup Events</div>
+                    </div>
+                </div>
+                <p>Press and hold <kbd>Space</kbd>, then release to see the difference between keydown and keyup:</p>
+                <!-- Keydown (default) and keyup event bindings -->
+                <div data-on-keys:space="$keyEvents.down++"></div>
+                <div data-on-keys:space__up="$keyEvents.up++"></div>
+                <button data-on:click="$keyEvents = { down: 0, up: 0 }">Reset Counters</button>
+                <p style="font-size: 0.9em; color: var(--gray-700); margin-top: 1rem;">
+                    <strong>Tip:</strong> Hold space to see keydown fire repeatedly, then release to see keyup fire once.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
+            }
+        }
+    </script>
+    <script type="module">
+        // Import the plugin - it will auto-register if 'datastar' is available via importmap
+        import './dist/index.js'
+    </script>
+</body>
+</html>

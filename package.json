@@ -1,0 +1,46 @@
+{
+  "name": "@mbolli/datastar-attribute-on-keys",
+  "version": "1.0.0",
+  "description": "Datastar plugin for binding keyboard events to actions with support for key combinations",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "NODE_ENV=production node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
+    "build:dev": "node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs",
+    "test": "NODE_ENV=test node esbuild.config.js && dts-bundle-generator --config dts-bundle-generator.config.cjs && node --test dist/index.test.js",
+    "test:browser": "python3 -m http.server 8080",
+    "prepublishOnly": "pnpm test"
+  },
+  "keywords": [
+    "datastar",
+    "plugin",
+    "attribute",
+    "keyboard",
+    "events",
+    "keys",
+    "keypress",
+    "binding"
+  ],
+  "author": "Michael Bolli <michael@bolli.us>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^24.10.0",
+    "datastar": "github:starfederation/datastar",
+    "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.25.12",
+    "jsdom": "^27.1.0",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbolli/datastar-attribute-on-keys.git"
+  }
+}

@@ -1,0 +1,14 @@
+module.exports = {
+    entries: [
+        {
+            filePath: './dist/index.d.ts',
+            outFile: './dist/index.d.ts',
+            libraries: {
+                inlinedLibraries: ['datastar']
+            },
+            output: {
+                noBanner: true,
+            }
+        }
+    ]
+}
