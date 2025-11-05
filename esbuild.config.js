@@ -8,7 +8,7 @@ const config = {
   format: 'esm',
   outfile: 'dist/index.js',
   minify: process.env.NODE_ENV === 'production',
-  sourcemap: process.env.NODE_ENV !== 'production',
+  sourcemap: true,
   target: 'es2021',
   // External dependencies - users should load datastar separately
   external: ['datastar'],
