@@ -44,7 +44,10 @@ export type AttributePlugin<R extends Requirement = Requirement, RxReturn extend
 };
 export type HTMLOrSVG = HTMLElement | SVGElement | MathMLElement;
 export type Modifiers = Map<string, Set<string>>; // mod name -> tags
+export type EventCallbackHandler = (...args: any[]) => void;
 declare function onKeysPlugin(beginBatch: () => void, endBatch: () => void): AttributePlugin;
+export declare const modifyViewTransition: (callback: EventCallbackHandler, mods: Modifiers) => EventCallbackHandler;
+export declare const modifyTiming: (callback: EventCallbackHandler, mods: Modifiers) => EventCallbackHandler;
 
 export {
 	onKeysPlugin as default,

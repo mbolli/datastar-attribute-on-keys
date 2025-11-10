@@ -260,6 +260,33 @@
             display: block;
         }
         
+        /* View Transition API styles */
+        @keyframes fade-in {
+            from { opacity: 0; }
+        }
+        
+        @keyframes fade-out {
+            to { opacity: 0; }
+        }
+        
+        @keyframes slide-from-right {
+            from { transform: translateX(30px); }
+        }
+        
+        @keyframes slide-to-left {
+            to { transform: translateX(-30px); }
+        }
+        
+        ::view-transition-old(counter-vt) {
+            animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+                       300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+        }
+        
+        ::view-transition-new(counter-vt) {
+            animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+                       300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding-right: 2rem;
@@ -415,13 +442,13 @@
             <h2>Test 1: Single Key - Space Counter</h2>
             <p>Uses <code>data-on-keys:space</code> to increment counter on spacebar (prevents page scroll by default).</p>
             
-            <div data-signals:counter="0">
-                <div class="counter" data-text="$counter"></div>
+            <div data-signals='{ "test1": { "counter": 0 } }'>
+                <div class="counter" data-text="$test1.counter"></div>
                 <p>Press <kbd>Space</kbd> to increment counter:</p>
                 <!-- Single key binding - prevent is now default -->
-                <div data-on-keys:space="$counter++"></div>
-                <button data-on:click="$counter = 0">Reset Counter</button>
-                <button data-on:click="$counter += 10">Add 10</button>
+                <div data-on-keys:space="$test1.counter++"></div>
+                <button data-on:click="$test1.counter = 0">Reset Counter</button>
+                <button data-on:click="$test1.counter += 10">Add 10</button>
             </div>
         </div>
 
@@ -430,14 +457,14 @@
             <h2>Test 2: Key Combination - Ctrl+K</h2>
             <p>Uses <code>data-on-keys:ctrl-k</code> for a global keyboard shortcut (window is now default).</p>
 
-            <div data-signals:enabled="false">
+            <div data-signals='{ "test2": { "enabled": false } }'>
                 <p>Press <kbd>Ctrl + K</kbd> anywhere to toggle mode:</p>
                 <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px; margin: 1rem 0;">
-                    Mode: <strong data-text="$enabled ? 'ENABLED' : 'DISABLED'"></strong>
+                    Mode: <strong data-text="$test2.enabled ? 'ENABLED' : 'DISABLED'"></strong>
                 </div>
                 <!-- Safe key combination binding - window is now default -->
-                <div data-on-keys:ctrl-k="$enabled = !$enabled"></div>
-                <button data-on:click="$enabled = !$enabled">
+                <div data-on-keys:ctrl-k="$test2.enabled = !$test2.enabled"></div>
+                <button data-on:click="$test2.enabled = !$test2.enabled">
                     Toggle Mode (Button Alternative)
                 </button>
             </div>
@@ -448,14 +475,14 @@
             <h2>Test 3: Multiple Keys - Enter or Tab</h2>
             <p>Uses <code>data-on-keys:enter.tab</code> to trigger on multiple keys.</p>
             
-            <div data-signals:message="'Press Enter or Tab to update this message!'">
+            <div data-signals='{ "test3": { "message": "Press Enter or Tab to update this message!" } }'>
                 <div class="key-display">
-                    <div data-text="$message"></div>
+                    <div data-text="$test3.message"></div>
                 </div>
                 <p>Press <kbd>Enter</kbd> or <kbd>Tab</kbd> to show message:</p>
                 <!-- Multiple keys binding -->
-                <div data-on-keys:enter.tab__noprevent="$message = 'You pressed a key at ' + new Date().toLocaleTimeString()"></div>
-                <button data-on:click="$message = 'Reset at ' + new Date().toLocaleTimeString()">
+                <div data-on-keys:enter.tab__noprevent="$test3.message = 'You pressed a key at ' + new Date().toLocaleTimeString()"></div>
+                <button data-on:click="$test3.message = 'Reset at ' + new Date().toLocaleTimeString()">
                     Reset Message
                 </button>
             </div>
@@ -488,14 +515,14 @@
             <h2>Test 5: Global Key Monitor</h2>
             <p>Uses <code>data-on-keys</code> to capture any key press globally (prevents default to avoid conflicts).</p>
             
-            <div data-signals:last-key="'none'">
+            <div data-signals='{ "test5": { "lastKey": "none" } }'>
                 <div class="key-display">
-                    Last key pressed: <strong data-text="$lastKey"></strong>
+                    Last key pressed: <strong data-text="$test5.lastKey"></strong>
                 </div>
                 <p>Press any key anywhere on the page to see it captured:</p>
                 <!-- Capture any key press globally - prevents default to avoid browser shortcuts -->
-                <div data-on-keys="$lastKey = event.key"></div>
-                <button data-on:click="$lastKey = 'none'">Clear</button>
+                <div data-on-keys="$test5.lastKey = event.key"></div>
+                <button data-on:click="$test5.lastKey = 'none'">Clear</button>
             </div>
         </div>
 
@@ -504,17 +531,17 @@
             <h2>Test 6: Element-Specific Key Binding</h2>
             <p>Uses <code>data-on-keys:ctrl-enter__el</code> to capture Ctrl+Enter key only when the input has focus.</p>
             
-            <div data-signals:input-message="'Type in the input and press Ctrl+Enter'">
+            <div data-signals='{ "test6": { "inputMessage": "Type in the input and press Ctrl+Enter" } }'>
                 <div class="key-display">
-                    <div data-text="$inputMessage"></div>
+                    <div data-text="$test6.inputMessage"></div>
                 </div>
                 <p>Focus this input and press <kbd>Ctrl + Enter</kbd> (only works when input is focused):</p>
                 <input 
                     type="text" 
                     placeholder="Type something and press Ctrl+Enter..." 
-                    data-on-keys:ctrl-enter__el="$inputMessage = 'You pressed Ctrl+Enter in the input: ' + event.target.value + ' at ' + new Date().toLocaleTimeString()"
+                    data-on-keys:ctrl-enter__el="$test6.inputMessage = 'You pressed Ctrl+Enter in the input: ' + event.target.value + ' at ' + new Date().toLocaleTimeString()"
                 />
-                <button data-on:click="$inputMessage = 'Reset at ' + new Date().toLocaleTimeString()">
+                <button data-on:click="$test6.inputMessage = 'Reset at ' + new Date().toLocaleTimeString()">
                     Reset Message
                 </button>
             </div>
@@ -525,15 +552,15 @@
             <h2>Test 7: Allow Default Behavior</h2>
             <p>Uses <code>data-on-keys:tab__noprevent</code> to capture Tab key but still allow normal tab navigation.</p>
             
-            <div data-signals:tab-count="0">
-                <div class="counter" data-text="$tabCount"></div>
+            <div data-signals='{ "test7": { "tabCount": 0 } }'>
+                <div class="counter" data-text="$test7.tabCount"></div>
                 <p>Tab through these inputs - the counter will increment but tab navigation still works:</p>
                 <!-- Allow default tab behavior while still counting -->
-                <div data-on-keys:tab__noprevent="$tabCount++"></div>
+                <div data-on-keys:tab__noprevent="$test7.tabCount++"></div>
                 <input type="text" placeholder="First input">
                 <input type="text" placeholder="Second input">
                 <input type="text" placeholder="Third input">
-                <button data-on:click="$tabCount = 0">Reset Tab Counter</button>
+                <button data-on:click="$test7.tabCount = 0">Reset Tab Counter</button>
             </div>
         </div>
 
@@ -542,25 +569,99 @@
             <h2>Test 8: Keyup Events</h2>
             <p>Uses <code>data-on-keys:space__up</code> to trigger on key release instead of key press.</p>
             
-            <div data-signals='{ "keyEvents": { "down": 0, "up": 0 } }'>
+            <div data-signals='{ "test8": { "keyEvents": { "down": 0, "up": 0 } } }'>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
                     <div style="text-align: center;">
-                        <div class="counter" data-text="$keyEvents.down"></div>
+                        <div class="counter" data-text="$test8.keyEvents.down"></div>
                         <div>Keydown Events</div>
                     </div>
                     <div style="text-align: center;">
-                        <div class="counter" data-text="$keyEvents.up"></div>
+                        <div class="counter" data-text="$test8.keyEvents.up"></div>
                         <div>Keyup Events</div>
                     </div>
                 </div>
                 <p>Press and hold <kbd>Space</kbd>, then release to see the difference between keydown and keyup:</p>
                 <!-- Keydown (default) and keyup event bindings -->
-                <div data-on-keys:space="$keyEvents.down++"></div>
-                <div data-on-keys:space__up="$keyEvents.up++"></div>
-                <button data-on:click="$keyEvents = { down: 0, up: 0 }">Reset Counters</button>
+                <div data-on-keys:space="$test8.keyEvents.down++"></div>
+                <div data-on-keys:space__up="$test8.keyEvents.up++"></div>
+                <button data-on:click="$test8.keyEvents = { down: 0, up: 0 }">Reset Counters</button>
                 <p style="font-size: 0.9em; color: var(--gray-700); margin-top: 1rem;">
                     <strong>Tip:</strong> Hold space to see keydown fire repeatedly, then release to see keyup fire once.
                 </p>
+            </div>
+        </div>
+
+        <!-- Test 9: Timing Modifiers (Delay, Debounce, Throttle) and View Transitions -->
+        <div class="test-section">
+            <h2>Test 9: Timing Modifiers & View Transitions</h2>
+            <p>Test delay, debounce, throttle modifiers and view transitions with keyboard events.</p>
+            
+            <div data-signals='{ 
+                "test9": {
+                    "timing": { 
+                        "normal": 0, 
+                        "delayed": 0, 
+                        "debounced": 0, 
+                        "throttled": 0,
+                        "viewTransition": 0
+                    },
+                    "delayStatus": "waiting...",
+                    "debounceStatus": "waiting...",
+                    "throttleStatus": "ready"
+                }
+            }'>
+                <h3>1. Normal (No Timing Modifier) - <code>data-on-keys:1</code></h3>
+                <p>Press <kbd>1</kbd> to increment immediately:</p>
+                <div class="counter" data-text="$test9.timing.normal"></div>
+                <div data-on-keys:1="$test9.timing.normal++"></div>
+                
+                <h3 style="margin-top: 2rem;">2. Delay Modifier - <code>data-on-keys:2__delay.500ms</code></h3>
+                <p>Press <kbd>2</kbd> and the counter will increment after a 500ms delay:</p>
+                <div class="counter" data-text="$test9.timing.delayed"></div>
+                <div class="key-display" data-text="$test9.delayStatus"></div>
+                <div data-on-keys:2="$test9.delayStatus = 'delaying...'; setTimeout(() => $test9.delayStatus = 'executed!', 500)"></div>
+                <div data-on-keys:2__delay.500ms="$test9.timing.delayed++"></div>
+                
+                <h3 style="margin-top: 2rem;">3. Debounce Modifier - <code>data-on-keys:3__debounce.500ms</code></h3>
+                <p>Press <kbd>3</kbd> rapidly - counter increments only after you stop pressing for 500ms:</p>
+                <div class="counter" data-text="$test9.timing.debounced"></div>
+                <div class="key-display" data-text="$test9.debounceStatus"></div>
+                <div data-on-keys:3="$test9.debounceStatus = 'waiting for debounce...'"></div>
+                <div data-on-keys:3__debounce.500ms="$test9.timing.debounced++; $test9.debounceStatus = 'debounce fired!'"></div>
+                <p style="font-size: 0.9em; color: var(--gray-700);">
+                    <strong>Try it:</strong> Press <kbd>3</kbd> multiple times quickly, then wait 500ms. The counter increments only once after you stop.
+                </p>
+                
+                <h3 style="margin-top: 2rem;">4. Throttle Modifier - <code>data-on-keys:4__throttle.500ms</code></h3>
+                <p>Press <kbd>4</kbd> rapidly - counter increments at most once every 500ms:</p>
+                <div class="counter" data-text="$test9.timing.throttled"></div>
+                <div class="key-display" data-text="$test9.throttleStatus"></div>
+                <div data-on-keys:4__throttle.500ms="$test9.timing.throttled++; $test9.throttleStatus = 'throttled - wait 500ms'; setTimeout(() => $test9.throttleStatus = 'ready', 500)"></div>
+                <p style="font-size: 0.9em; color: var(--gray-700);">
+                    <strong>Try it:</strong> Hold down <kbd>4</kbd> and notice the counter increments at a controlled rate.
+                </p>
+                
+                <h3 style="margin-top: 2rem;">5. View Transition Modifier - <code>data-on-keys:5__viewtransition</code></h3>
+                <p>Press <kbd>5</kbd> to increment with smooth view transitions (if supported by your browser):</p>
+                <div class="counter" style="view-transition-name: counter-vt;" data-text="$test9.timing.viewTransition"></div>
+                <div data-on-keys:5__viewtransition="$test9.timing.viewTransition++"></div>
+                <p style="font-size: 0.9em; color: var(--gray-700);">
+                    <strong>Note:</strong> View Transitions API support varies by browser. In supported browsers, you'll see smooth animated transitions.
+                </p>
+                
+                <button data-on:click="$test9.timing = { normal: 0, delayed: 0, debounced: 0, throttled: 0, viewTransition: 0 }; $test9.delayStatus = 'waiting...'; $test9.debounceStatus = 'waiting...'; $test9.throttleStatus = 'ready'">
+                    Reset All Counters
+                </button>
+                
+                <div style="margin-top: 1.5rem; padding: 1rem; background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">💡 Timing Modifier Tips</h4>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem; color: #78350f; font-size: 0.9em;">
+                        <li><strong>Delay:</strong> Postpones execution by a fixed time. Use <code>__delay.500ms</code> or <code>__delay.1s</code></li>
+                        <li><strong>Debounce:</strong> Waits for user to stop before executing. Great for search inputs. Supports <code>__debounce.500ms__leading</code> and <code>__debounce.500ms__notrailing</code></li>
+                        <li><strong>Throttle:</strong> Limits execution rate. Perfect for scroll or resize handlers. Supports <code>__throttle.500ms__trailing</code> and <code>__throttle.500ms__noleading</code></li>
+                        <li><strong>View Transition:</strong> Wraps state changes in the View Transitions API for smooth animations</li>
+                    </ul>
+                </div>
             </div>
         </div>
 

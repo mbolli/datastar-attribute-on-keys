@@ -105,7 +105,7 @@ export default function onKeysPlugin(beginBatch: () => void, endBatch: () => voi
         },
         argNames: ['evt'],
         returnsValue: true,
-        apply({ el, key, mods, rx }: { el: Element; key: string; mods: Map<string, Set<string>>; rx: (event?: Event) => void }) {
+        apply({ el, key, mods, rx }: { el: Element; key: string; mods: Modifiers; rx: (event?: Event) => void }) {
             // Parse key combinations from the key parameter
             // Support formats like: "esc", "alt-q", "ctrl-shift-s", "esc.alt-q.enter"
             const keySpecs = key ? key.split('.').map((k: string) => k.trim()) : [];
@@ -114,8 +114,19 @@ export default function onKeysPlugin(beginBatch: () => void, endBatch: () => voi
             let target: Element | Window | Document = window;
             if (mods.has('el')) target = el;
             
-            // Create callback that replicates the exact behavior of datastar's on plugin
+            // Create the core callback that will be wrapped with modifiers
             let callback = (evt?: Event) => {
+                beginBatch();
+                rx(evt);
+                endBatch();
+            }
+            
+            // Apply timing and view transition modifiers
+            callback = modifyViewTransition(callback, mods);
+            callback = modifyTiming(callback, mods);
+            
+            // Create the event handler that checks keys and calls the modified callback
+            const eventHandler = (evt?: Event) => {
                 if (evt) {
                     // Only check key matching for keyboard events
                     if (!(evt instanceof KeyboardEvent)) {
@@ -150,15 +161,9 @@ export default function onKeysPlugin(beginBatch: () => void, endBatch: () => voi
                     }
                 }
                 
-                beginBatch();
-                rx(evt);
-                endBatch();
+                // Execute the modified callback (which may be wrapped with timing/view transition)
+                callback(evt);
             }
-            
-            // Apply timing and view transition modifiers (same as datastar's on plugin)
-            // Currently these are not exported
-            // callback = modifyViewTransition(callback, mods);
-            // callback = modifyTiming(callback, mods);
             
             const evtListOpts: AddEventListenerOptions = {
                 capture: mods.has('capture'),
@@ -167,10 +172,139 @@ export default function onKeysPlugin(beginBatch: () => void, endBatch: () => voi
             }
             const eventType = mods.has('up') ? 'keyup' : 'keydown';
             
-            target.addEventListener(eventType, callback, evtListOpts);
+            target.addEventListener(eventType, eventHandler, evtListOpts);
             return () => {
-                target.removeEventListener(eventType, callback, evtListOpts);
+                target.removeEventListener(eventType, eventHandler, evtListOpts);
             }
         }
     } as AttributePlugin;
+}
+
+import type { EventCallbackHandler, Modifiers } from 'datastar/library/src/engine/types'
+
+// https://github.com/starfederation/datastar-pro/blob/3d9a83f79e2c940e1e14dd996a36bb79e98800dd/library/src/utils/view-transitions.ts
+export const modifyViewTransition = (callback: EventCallbackHandler, mods: Modifiers): EventCallbackHandler => {
+  if (mods.has('viewtransition') && !!document.startViewTransition) {
+    const cb = callback
+    callback = (...args: any[]) =>
+      document.startViewTransition(() => cb(...args))
+  }
+
+  return callback   
+}
+
+// https://github.com/starfederation/datastar-pro/blob/3d9a83f79e2c940e1e14dd996a36bb79e98800dd/library/src/utils/timing.ts
+const delay = (
+  callback: EventCallbackHandler,
+  wait: number,
+): EventCallbackHandler => {
+  return (...args: any[]) => {
+    setTimeout(() => {
+      callback(...args)
+    }, wait)
+  }
+}
+
+const debounce = (
+  callback: EventCallbackHandler,
+  wait: number,
+  leading = false,
+  trailing = true,
+): EventCallbackHandler => {
+  let timer: ReturnType<typeof setTimeout> | number = 0
+  return (...args: any[]) => {
+    timer && clearTimeout(timer)
+
+    if (leading && !timer) {
+      callback(...args)
+    }
+
+    timer = setTimeout(() => {
+      if (trailing) {
+        callback(...args)
+      }
+      timer && clearTimeout(timer)
+      timer = 0
+    }, wait)
+  }
+}
+
+const throttle = (
+  callback: EventCallbackHandler,
+  wait: number,
+  leading = true,
+  trailing = false,
+): EventCallbackHandler => {
+  let waiting = false
+
+  return (...args: any[]) => {
+    if (waiting) return
+
+    if (leading) {
+      callback(...args)
+    }
+
+    waiting = true
+    setTimeout(() => {
+      if (trailing) {
+        callback(...args)
+      }
+      waiting = false
+    }, wait)
+  }
+}
+
+export const modifyTiming = (
+  callback: EventCallbackHandler,
+  mods: Modifiers,
+): EventCallbackHandler => {
+  const delayArgs = mods.get('delay')
+  if (delayArgs) {
+    const wait = tagToMs(delayArgs)
+    callback = delay(callback, wait)
+  }
+
+  const debounceArgs = mods.get('debounce')
+  if (debounceArgs) {
+    const wait = tagToMs(debounceArgs)
+    const leading = tagHas(debounceArgs, 'leading', false)
+    const trailing = !tagHas(debounceArgs, 'notrailing', false)
+    callback = debounce(callback, wait, leading, trailing)
+  }
+
+  const throttleArgs = mods.get('throttle')
+  if (throttleArgs) {
+    const wait = tagToMs(throttleArgs)
+    const leading = !tagHas(throttleArgs, 'noleading', false)
+    const trailing = tagHas(throttleArgs, 'trailing', false)
+    callback = throttle(callback, wait, leading, trailing)
+  }
+
+  return callback
+}
+
+// https://github.com/starfederation/datastar-pro/blob/3d9a83f79e2c940e1e14dd996a36bb79e98800dd/library/src/utils/tags.ts
+const tagToMs = (args: Set<string>) => {
+  if (!args || args.size <= 0) return 0
+  for (const arg of args) {
+    if (arg.endsWith('ms')) {
+      return +arg.replace('ms', '')
+    }
+    if (arg.endsWith('s')) {
+      return +arg.replace('s', '') * 1000
+    }
+    try {
+      return Number.parseFloat(arg)
+    } catch (_) {}
+  }
+  return 0
+}
+
+const tagHas = (
+  tags: Set<string>,
+  tag: string,
+  defaultValue = false,
+) => {
+  if (!tags) return defaultValue
+  return tags.has(tag.toLowerCase())
 }

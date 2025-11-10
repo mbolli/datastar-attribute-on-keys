@@ -234,3 +234,312 @@ test('handles key normalization for special keys', () => {
     
     if (cleanup) cleanup()
 })
+
+test('delay modifier delays callback execution', async () => {
+    const callbackTimes: number[] = []
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['delay', new Set<string>(['100ms'])]])
+    const rx = () => { callbackTimes.push(Date.now()) }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const startTime = Date.now()
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    
+    // Callback should not be triggered immediately
+    assert.strictEqual(callbackTimes.length, 0)
+    
+    // Wait for delay to pass
+    await new Promise(resolve => setTimeout(resolve, 150))
+    
+    // Callback should now be triggered
+    assert.strictEqual(callbackTimes.length, 1)
+    const elapsed = callbackTimes[0] - startTime
+    assert.ok(elapsed >= 100, `Expected delay >= 100ms, got ${elapsed}ms`)
+    
+    if (cleanup) cleanup()
+})
+
+test('delay modifier supports seconds notation', async () => {
+    const callbackTimes: number[] = []
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['delay', new Set<string>(['0.1s'])]])
+    const rx = () => { callbackTimes.push(Date.now()) }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const startTime = Date.now()
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    
+    // Wait for delay
+    await new Promise(resolve => setTimeout(resolve, 150))
+    
+    assert.strictEqual(callbackTimes.length, 1)
+    const elapsed = callbackTimes[0] - startTime
+    assert.ok(elapsed >= 100, `Expected delay >= 100ms, got ${elapsed}ms`)
+    
+    if (cleanup) cleanup()
+})
+
+test('debounce modifier debounces rapid key presses', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['debounce', new Set<string>(['100ms'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    // Fire multiple events in rapid succession
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    
+    // Callback should not be triggered yet
+    assert.strictEqual(callbackCount, 0)
+    
+    // Wait for debounce to complete
+    await new Promise(resolve => setTimeout(resolve, 150))
+    
+    // Callback should be triggered only once
+    assert.strictEqual(callbackCount, 1)
+    
+    if (cleanup) cleanup()
+})
+
+test('debounce modifier with leading option', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['debounce', new Set<string>(['100ms', 'leading'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    
+    // Callback should be triggered immediately with leading option
+    assert.strictEqual(callbackCount, 1)
+    
+    // Fire more events rapidly
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    
+    // Wait for debounce to complete
+    await new Promise(resolve => setTimeout(resolve, 150))
+    
+    // Should be triggered once at start and once at end (trailing is true by default)
+    assert.strictEqual(callbackCount, 2)
+    
+    if (cleanup) cleanup()
+})
+
+test('debounce modifier with notrailing option', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['debounce', new Set<string>(['100ms', 'notrailing'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    
+    // Wait for debounce period
+    await new Promise(resolve => setTimeout(resolve, 150))
+    
+    // With notrailing, callback should not be triggered
+    assert.strictEqual(callbackCount, 0)
+    
+    if (cleanup) cleanup()
+})
+
+test('throttle modifier throttles rapid key presses', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['throttle', new Set<string>(['100ms'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    
+    // First event - should trigger immediately (leading by default)
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 1)
+    
+    // Second event within throttle period - should not trigger
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 1)
+    
+    // Third event still within period - should not trigger
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 1)
+    
+    // Wait for throttle period to end
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // Fourth event after throttle period - should trigger
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 2)
+    
+    if (cleanup) cleanup()
+})
+
+test('throttle modifier with trailing option', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['throttle', new Set<string>(['100ms', 'trailing'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    
+    // Fire multiple events
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 1) // Leading fires
+    
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    
+    await new Promise(resolve => setTimeout(resolve, 20))
+    dom.window.dispatchEvent(event)
+    
+    // Wait for throttle period to end
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // Trailing should fire
+    assert.strictEqual(callbackCount, 2)
+    
+    if (cleanup) cleanup()
+})
+
+test('throttle modifier with noleading option', async () => {
+    let callbackCount = 0
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['throttle', new Set<string>(['100ms', 'noleading'])]])
+    const rx = () => { callbackCount++ }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    
+    // First event should not trigger immediately with noleading
+    dom.window.dispatchEvent(event)
+    assert.strictEqual(callbackCount, 0)
+    
+    // Wait for throttle period
+    await new Promise(resolve => setTimeout(resolve, 120))
+    
+    // Still should be 0 (no trailing by default)
+    assert.strictEqual(callbackCount, 0)
+    
+    if (cleanup) cleanup()
+})
+
+test('viewtransition modifier wraps callback in startViewTransition', () => {
+    let callbackTriggered = false
+    let viewTransitionStarted = false
+    
+    // Mock startViewTransition
+    const originalStartViewTransition = (document as any).startViewTransition
+    ;(document as any).startViewTransition = (callback: () => void) => {
+        viewTransitionStarted = true
+        callback()
+    }
+    
+    const plugin = onKeysPlugin(() => {}, () => {})
+    const el = document.createElement('div')
+    const mods = new Map<string, Set<string>>([['viewtransition', new Set<string>()]])
+    const rx = () => { callbackTriggered = true }
+    
+    const cleanup = plugin.apply({
+        el,
+        key: 'escape',
+        mods,
+        rx,
+    } as any)
+    
+    const event = new (dom.window as any).KeyboardEvent('keydown', { key: 'Escape' })
+    dom.window.dispatchEvent(event)
+    
+    // Both callback and view transition should be triggered
+    assert.strictEqual(callbackTriggered, true)
+    assert.strictEqual(viewTransitionStarted, true)
+    
+    // Restore original
+    if (originalStartViewTransition) {
+        (document as any).startViewTransition = originalStartViewTransition
+    } else {
+        delete (document as any).startViewTransition
+    }
+    
+    if (cleanup) cleanup()
+})
