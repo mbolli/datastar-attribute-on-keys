@@ -49,6 +49,10 @@
             margin-bottom: 2rem;
         }
         
+        .header-content {
+            flex: 1;
+        }
+        
         header h1 {
             margin: 0 0 0.5rem 0;
             font-size: 2.5rem;
@@ -189,6 +193,60 @@
             border-bottom: none;
         }
         
+        .status-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .status-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            user-select: none;
+        }
+        
+        .status-section-header h3 {
+            margin: 0;
+            color: var(--gray-900);
+            font-size: 1.25rem;
+        }
+        
+        .status-section-toggle {
+            color: var(--gray-700);
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+        
+        .status-section-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding-top: 0.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.375rem 0;
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+            transition: all 0.2s;
+            display: block;
+        }
+        
+        .nav-links a:hover {
+            border-left-color: var(--primary);
+            padding-left: 0.75rem;
+            color: var(--primary-dark);
+        }
+        
         .status-label {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -298,15 +356,20 @@
     </style>
 </head>
 <body>
-    <div class="status">
-        <h3>📦 Installation</h3>
-        <div class="status-item">
-            <div class="status-label">NPM</div>
-            <code style="display: block; white-space: pre-wrap; word-break: break-all; font-size: 0.7em; padding: 0.5rem;">npm install @mbolli/datastar-attribute-on-keys</code>
-        </div>
-        <div class="status-item">
-            <div class="status-label">Setup</div>
-            <pre style="font-size: 0.65em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-900); color: var(--gray-50); border-radius: 4px; white-space: pre-wrap; word-break: break-all;">&lt;script type="importmap"&gt;
+    <div class="status" data-signals='{"sidebar": {"installOpen": true, "navOpen": true, "stateOpen": false}}'>
+        <div class="status-section">
+            <div class="status-section-header" data-on:click="$sidebar.installOpen = !$sidebar.installOpen">
+                <h3>📦 Installation</h3>
+                <span class="status-section-toggle" data-text="$sidebar.installOpen ? '−' : '+'"></span>
+            </div>
+            <div class="status-section-content" data-show="$sidebar.installOpen">
+                <div class="status-item">
+                    <div class="status-label">NPM</div>
+                    <code style="display: block; white-space: pre-wrap; word-break: break-all; font-size: 0.7em; padding: 0.5rem;">npm install @mbolli/datastar-attribute-on-keys</code>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Setup</div>
+                    <pre style="font-size: 0.65em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-900); color: var(--gray-50); border-radius: 4px; white-space: pre-wrap; word-break: break-all;">&lt;script type="importmap"&gt;
 {
   "imports": {
     "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
@@ -314,12 +377,42 @@
 }
 &lt;/script&gt;
 &lt;script type="module" src="https://cdn.jsdelivr.net/npm/@mbolli/datastar-attribute-on-keys@1/dist/index.js"&gt;&lt;/script&gt;</pre>
+                </div>
+            </div>
         </div>
         
-        <h3>📊 Live State</h3>
-        <div class="status-item">
-            <div class="status-label">Signals</div>
-            <pre data-json-signals style="font-size: 0.75em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-50); border-radius: 4px;"></pre>
+        <div class="status-section">
+            <div class="status-section-header" data-on:click="$sidebar.navOpen = !$sidebar.navOpen">
+                <h3>📑 Navigation</h3>
+                <span class="status-section-toggle" data-text="$sidebar.navOpen ? '−' : '+'"></span>
+            </div>
+            <div class="status-section-content" data-show="$sidebar.navOpen">
+                <nav class="nav-links">
+                    <a href="#usage-guide">📖 Usage Guide</a>
+                    <a href="#test1">Test 1: Single Key</a>
+                    <a href="#test2">Test 2: Key Combination</a>
+                    <a href="#test3">Test 3: Multiple Keys</a>
+                    <a href="#test4">Test 4: Global Events</a>
+                    <a href="#test5">Test 5: Key Monitor</a>
+                    <a href="#test6">Test 6: Element-Specific</a>
+                    <a href="#test7">Test 7: Default Behavior</a>
+                    <a href="#test8">Test 8: Keyup Events</a>
+                    <a href="#test9">Test 9: Timing & Transitions</a>
+                </nav>
+            </div>
+        </div>
+        
+        <div class="status-section">
+            <div class="status-section-header" data-on:click="$sidebar.stateOpen = !$sidebar.stateOpen">
+                <h3>📊 Live State</h3>
+                <span class="status-section-toggle" data-text="$sidebar.stateOpen ? '−' : '+'"></span>
+            </div>
+            <div class="status-section-content" data-show="$sidebar.stateOpen">
+                <div class="status-item">
+                    <div class="status-label">Signals</div>
+                    <pre data-json-signals style="font-size: 0.75em; overflow-x: auto; margin: 0; padding: 0.5rem; background: var(--gray-50); border-radius: 4px;"></pre>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -335,7 +428,7 @@
         </header>
 
         <!-- Usage Documentation -->
-        <section class="test-section">
+        <section class="test-section" id="usage-guide">
             <h2>📖 Usage Guide</h2>
             <p>The <code>data-on-keys</code> attribute allows you to bind keyboard events to Datastar actions with powerful key combinations and modifiers.</p>
             
@@ -385,7 +478,9 @@
                 </p>
             </div>
             
-            <h3>Target Modifiers</h3>
+            <h3>Modifiers</h3>
+            
+            <h4 style="margin-top: 1rem;">Target Modifiers</h4>
             <div style="margin: 1rem 0;">
                 <ul style="margin: 0.5rem 0; padding-left: 2rem;">
                     <li><strong>Default (no modifier)</strong> - Binds to <kbd>window</kbd> (global)</li>
@@ -393,7 +488,7 @@
                 </ul>
             </div>
             
-            <h3>Behavior Modifiers</h3>
+            <h4 style="margin-top: 1rem;">Behavior Modifiers</h4>
             <div style="margin: 1rem 0;">
                 <ul style="margin: 0.5rem 0; padding-left: 2rem;">
                     <li><strong>Default</strong> - Prevents default browser behavior (<code>preventDefault()</code>)</li>
@@ -402,7 +497,7 @@
                 </ul>
             </div>
             
-            <h3>Event Timing</h3>
+            <h4 style="margin-top: 1rem;">Event Timing</h4>
             <div style="margin: 1rem 0;">
                 <ul style="margin: 0.5rem 0; padding-left: 2rem;">
                     <li><strong>Default</strong> - Triggers on <code>keydown</code></li>
@@ -410,13 +505,54 @@
                 </ul>
             </div>
             
-            <h3>Event Listener Options</h3>
+            <h4 style="margin-top: 1rem;">Event Listener Options</h4>
             <div style="margin: 1rem 0;">
                 <ul style="margin: 0.5rem 0; padding-left: 2rem;">
                     <li><code>__capture</code> - Use capture phase</li>
                     <li><code>__passive</code> - Passive event listener</li>
                     <li><code>__once</code> - Remove listener after first trigger</li>
                 </ul>
+            </div>
+            
+            <h3>Timing Modifiers</h3>
+            <div style="margin: 1rem 0;">
+                <p>Control when and how often callbacks are executed:</p>
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><code>__delay.{time}</code> - Postpone execution by a fixed time
+                        <ul style="margin: 0.25rem 0; padding-left: 1.5rem;">
+                            <li>Example: <code>__delay.500ms</code> or <code>__delay.1s</code></li>
+                        </ul>
+                    </li>
+                    <li><code>__debounce.{time}</code> - Wait for user to stop before executing
+                        <ul style="margin: 0.25rem 0; padding-left: 1.5rem;">
+                            <li>Options: <code>__leading</code>, <code>__notrailing</code></li>
+                            <li>Example: <code>__debounce.300ms__leading</code></li>
+                        </ul>
+                    </li>
+                    <li><code>__throttle.{time}</code> - Limit execution rate
+                        <ul style="margin: 0.25rem 0; padding-left: 1.5rem;">
+                            <li>Options: <code>__trailing</code>, <code>__noleading</code></li>
+                            <li>Example: <code>__throttle.1s__trailing</code></li>
+                        </ul>
+                    </li>
+                </ul>
+                <p style="font-size: 0.9em; color: var(--gray-700); margin-top: 0.5rem;">
+                    <strong>Note:</strong> Time can be specified in milliseconds (<code>ms</code>) or seconds (<code>s</code>).
+                </p>
+            </div>
+            
+            <h3>View Transitions</h3>
+            <div style="margin: 1rem 0;">
+                <ul style="margin: 0.5rem 0; padding-left: 2rem;">
+                    <li><code>__viewtransition</code> - Wrap state changes in the View Transitions API for smooth animations
+                        <ul style="margin: 0.25rem 0; padding-left: 1.5rem;">
+                            <li>Example: <code>data-on-keys:space__viewtransition="$counter++"</code></li>
+                        </ul>
+                    </li>
+                </ul>
+                <p style="font-size: 0.9em; color: var(--gray-700); margin-top: 0.5rem;">
+                    <strong>Note:</strong> View Transitions API support varies by browser. The modifier is safely ignored in unsupported browsers.
+                </p>
             </div>
             
             <h3>Common Examples</h3>
@@ -433,12 +569,20 @@
 &lt;div data-on-keys:tab__noprevent="logTab()"&gt;&lt;/div&gt;
 
 &lt;!-- Multiple triggers --&gt;
-&lt;div data-on-keys:escape.f1.ctrl-h="showHelp()"&gt;&lt;/div&gt;</code></pre>
+&lt;div data-on-keys:escape.f1.ctrl-h="showHelp()"&gt;&lt;/div&gt;
+
+&lt;!-- Timing modifiers --&gt;
+&lt;div data-on-keys:enter__delay.500ms="$message = 'Delayed!'"&gt;&lt;/div&gt;
+&lt;input data-on-keys__debounce.300ms__el="$search($event.target.value)"&gt;
+&lt;div data-on-keys:space__throttle.1s="$counter++"&gt;&lt;/div&gt;
+
+&lt;!-- View transitions --&gt;
+&lt;div data-on-keys:space__viewtransition="$counter++"&gt;&lt;/div&gt;</code></pre>
             </div>
         </section>
 
         <!-- Test 1: Single Key Binding -->
-        <div class="test-section">
+        <div class="test-section" id="test1">
             <h2>Test 1: Single Key - Space Counter</h2>
             <p>Uses <code>data-on-keys:space</code> to increment counter on spacebar (prevents page scroll by default).</p>
             
@@ -453,7 +597,7 @@
         </div>
 
         <!-- Test 2: Key Combination - Safe Combination -->
-        <div class="test-section">
+        <div class="test-section" id="test2">
             <h2>Test 2: Key Combination - Ctrl+K</h2>
             <p>Uses <code>data-on-keys:ctrl-k</code> for a global keyboard shortcut (window is now default).</p>
 
@@ -471,7 +615,7 @@
         </div>
 
         <!-- Test 3: Multiple Keys -->
-        <div class="test-section">
+        <div class="test-section" id="test3">
             <h2>Test 3: Multiple Keys - Enter or Tab</h2>
             <p>Uses <code>data-on-keys:enter.tab</code> to trigger on multiple keys.</p>
             
@@ -489,7 +633,7 @@
         </div>
 
         <!-- Test 4: Global Window Events -->
-        <div class="test-section">
+        <div class="test-section" id="test4">
             <h2>Test 4: Global Events - Modal Control</h2>
             <p>Uses <code>data-on-keys:f1</code> to open modal and <code>data-on-keys:escape</code> to close it (window is now default).</p>
             
@@ -511,7 +655,7 @@
         </div>
 
         <!-- Test 5: Global Key Monitor -->
-        <div class="test-section">
+        <div class="test-section" id="test5">
             <h2>Test 5: Global Key Monitor</h2>
             <p>Uses <code>data-on-keys</code> to capture any key press globally (prevents default to avoid conflicts).</p>
             
@@ -527,7 +671,7 @@
         </div>
 
         <!-- Test 6: Element-Specific Binding -->
-        <div class="test-section">
+        <div class="test-section" id="test6">
             <h2>Test 6: Element-Specific Key Binding</h2>
             <p>Uses <code>data-on-keys:ctrl-enter__el</code> to capture Ctrl+Enter key only when the input has focus.</p>
             
@@ -548,7 +692,7 @@
         </div>
 
         <!-- Test 7: Allow Default Behavior -->
-        <div class="test-section">
+        <div class="test-section" id="test7">
             <h2>Test 7: Allow Default Behavior</h2>
             <p>Uses <code>data-on-keys:tab__noprevent</code> to capture Tab key but still allow normal tab navigation.</p>
             
@@ -565,7 +709,7 @@
         </div>
 
         <!-- Test 8: Keyup Events -->
-        <div class="test-section">
+        <div class="test-section" id="test8">
             <h2>Test 8: Keyup Events</h2>
             <p>Uses <code>data-on-keys:space__up</code> to trigger on key release instead of key press.</p>
             
@@ -592,7 +736,7 @@
         </div>
 
         <!-- Test 9: Timing Modifiers (Delay, Debounce, Throttle) and View Transitions -->
-        <div class="test-section">
+        <div class="test-section" id="test9">
             <h2>Test 9: Timing Modifiers & View Transitions</h2>
             <p>Test delay, debounce, throttle modifiers and view transitions with keyboard events.</p>
             

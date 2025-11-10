@@ -95,9 +95,7 @@ By default, key events are listened for globally on the window:
 Use the `el` modifier to listen only when the element has focus:
 
 ```html
-<input data-on-keys:enter__el="$form.submit()">
-  <!-- Only triggers when this input is focused -->
-</input>
+<input data-on-keys:enter__el="$form.submit()"><!-- Only triggers when this input is focused -->
 ```
 
 ### Event Modifiers
@@ -115,6 +113,30 @@ The plugin supports several modifiers:
 ```html
 <div data-on-keys:tab__noprevent="$counter++">
   <!-- Count tab presses but still allow tab navigation -->
+</div>
+```
+
+### Timing Modifiers
+
+Control when and how often callbacks are executed:
+
+- `delay.{time}` - Postpone execution (e.g., `__delay.500ms`, `__delay.1s`)
+- `debounce.{time}` - Wait for user to stop before executing (supports `__leading`, `__notrailing`)
+- `throttle.{time}` - Limit execution rate (supports `__trailing`, `__noleading`)
+
+```html
+<div data-on-keys:enter__delay.500ms="$message = 'Delayed!'"></div>
+<input data-on-keys__debounce.300ms__el="$search($event.target.value)">
+<div data-on-keys:space__throttle.1s="$counter++"></div>
+```
+
+### View Transitions
+
+- `viewtransition` - Wrap state changes in the View Transitions API for smooth animations
+
+```html
+<div data-on-keys:space__viewtransition="$counter++">
+  <!-- Counter updates with smooth animation -->
 </div>
 ```
 
