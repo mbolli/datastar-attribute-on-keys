@@ -27,6 +27,11 @@ jobs:
       - name: Check for skip release
         id: check_skip
         run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "Manual trigger, skipping skip-release check"
+            exit 0
+          fi
           COMMIT_MSG=$(git log -1 --pretty=%B)
           if [[ $COMMIT_MSG == *"[skip release]"* ]]; then
             echo "skip=true" >> $GITHUB_OUTPUT
