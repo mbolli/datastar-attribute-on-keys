@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -40,7 +41,7 @@ jobs:
         if: steps.check_skip.outputs.skip != 'true'
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
 
       - name: Install dependencies
         if: steps.check_skip.outputs.skip != 'true'
