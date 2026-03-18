@@ -5,6 +5,11 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      skip_version_bump:
+        description: 'Skip version bump (release current version as-is)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -65,21 +70,23 @@ jobs:
         if: steps.check_skip.outputs.skip != 'true'
         id: version
         run: |
-          # Check commit message for version bump type
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          
-          if [[ $COMMIT_MSG == *"[major]"* ]]; then
-            VERSION_TYPE="major"
-          elif [[ $COMMIT_MSG == *"[minor]"* ]]; then
-            VERSION_TYPE="minor"
+          if [[ "${{ inputs.skip_version_bump }}" == "true" ]]; then
+            echo "Skipping version bump, using current version"
           else
-            VERSION_TYPE="patch"
+            # Check commit message for version bump type
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            
+            if [[ $COMMIT_MSG == *"[major]"* ]]; then
+              VERSION_TYPE="major"
+            elif [[ $COMMIT_MSG == *"[minor]"* ]]; then
+              VERSION_TYPE="minor"
+            else
+              VERSION_TYPE="patch"
+            fi
+            
+            echo "Version type: $VERSION_TYPE"
+            npm version $VERSION_TYPE -m "chore: release %s [skip ci]"
           fi
-          
-          echo "Version type: $VERSION_TYPE"
-          
-          # Bump version
-          npm version $VERSION_TYPE -m "chore: release %s [skip ci]"
           
           # Get new version
           NEW_VERSION=$(node -p "require('./package.json').version")
@@ -88,6 +95,10 @@ jobs:
       - name: Push changes
         if: steps.check_skip.outputs.skip != 'true'
         run: |
+          if [[ "${{ inputs.skip_version_bump }}" == "true" ]]; then
+            VERSION=$(node -p "require('./package.json').version")
+            git tag "v$VERSION"
+          fi
           git push origin master --follow-tags
 
       - name: Create GitHub Release
