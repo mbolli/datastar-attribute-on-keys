@@ -223,7 +223,7 @@ const throttle = (
       lastArgs = args
     }
     if (!timer || debounce) {
-      if (timer) { 
+      if (timer) {
         clearTimeout(timer)
       }
       timer = setTimeout(() => {

@@ -34,6 +34,10 @@ export type AttributeContext<R extends Requirement = Requirement, RxReturn exten
 	rawKey: string;
 	evt?: Event;
 	error: ErrorFn;
+	loadedPluginNames: {
+		actions: Readonly<Set<string>>;
+		attributes: Readonly<Set<string>>;
+	};
 } & ReqFields<R, RxReturn>;
 export type AttributePlugin<R extends Requirement = Requirement, RxReturn extends boolean = boolean> = {
 	name: string;

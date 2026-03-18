@@ -32,7 +32,7 @@ This plugin requires an import map to resolve the `datastar` module. Set up your
 <script type="importmap">
 {
   "imports": {
-    "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
+    "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.8/bundles/datastar.js"
   }
 }
 </script>
@@ -102,13 +102,13 @@ Use the `el` modifier to listen only when the element has focus:
 
 The plugin supports several modifiers:
 
-- `el` - Listen on the element instead of window (requires focus)
-- `noprevent` - Allow default browser behavior (default prevents)
-- `stop` - Call `stopPropagation()` on the event  
-- `up` - Listen for `keyup` instead of `keydown` (default)
-- `capture` - Use capture phase
-- `passive` - Use passive event listener
-- `once` - Only trigger once
+- `__el` - Listen on the element instead of window (requires focus)
+- `__noprevent` - Allow default browser behavior (default prevents)
+- `__stop` - Call `stopPropagation()` on the event  
+- `__up` - Listen for `keyup` instead of `keydown` (default)
+- `__capture` - Use capture phase
+- `__passive` - Use passive event listener
+- `__once` - Only trigger once
 
 ```html
 <div data-on-keys:tab__noprevent="$counter++">
@@ -120,9 +120,9 @@ The plugin supports several modifiers:
 
 Control when and how often callbacks are executed:
 
-- `delay.{time}` - Postpone execution (e.g., `__delay.500ms`, `__delay.1s`)
-- `debounce.{time}` - Wait for user to stop before executing (supports `__leading`, `__notrailing`)
-- `throttle.{time}` - Limit execution rate (supports `__trailing`, `__noleading`)
+- `__delay.{time}` - Postpone execution (e.g., `__delay.500ms`, `__delay.1s`)
+- `__debounce.{time}` - Wait for user to stop before executing (supports `__leading`, `__notrailing`)
+- `__throttle.{time}` - Limit execution rate (supports `__trailing`, `__noleading`)
 
 ```html
 <div data-on-keys:enter__delay.500ms="$message = 'Delayed!'"></div>
@@ -132,7 +132,7 @@ Control when and how often callbacks are executed:
 
 ### View Transitions
 
-- `viewtransition` - Wrap state changes in the View Transitions API for smooth animations
+- `__viewtransition` - Wrap state changes in the View Transitions API for smooth animations
 
 ```html
 <div data-on-keys:space__viewtransition="$counter++">
