@@ -102,7 +102,7 @@ jobs:
         run: |
           if [[ "${{ inputs.skip_version_bump }}" == "true" ]]; then
             VERSION=$(node -p "require('./package.json').version")
-            git tag "v$VERSION"
+            git tag "v$VERSION" 2>/dev/null || echo "Tag v$VERSION already exists, skipping"
           fi
           git push origin master --follow-tags
 
