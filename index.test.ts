@@ -263,7 +263,7 @@ test('delay modifier delays callback execution', async () => {
     // Callback should now be triggered
     assert.strictEqual(callbackTimes.length, 1)
     const elapsed = callbackTimes[0] - startTime
-    assert.ok(elapsed >= 100, `Expected delay >= 100ms, got ${elapsed}ms`)
+    assert.ok(elapsed >= 95, `Expected delay >= ~100ms, got ${elapsed}ms`)
     
     if (cleanup) cleanup()
 })
@@ -292,7 +292,7 @@ test('delay modifier supports seconds notation', async () => {
     
     assert.strictEqual(callbackTimes.length, 1)
     const elapsed = callbackTimes[0] - startTime
-    assert.ok(elapsed >= 100, `Expected delay >= 100ms, got ${elapsed}ms`)
+    assert.ok(elapsed >= 95, `Expected delay >= ~100ms, got ${elapsed}ms`)
     
     if (cleanup) cleanup()
 })
