@@ -32,7 +32,7 @@ This plugin requires an import map to resolve the `datastar` module. Set up your
 <script type="importmap">
 {
   "imports": {
-    "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.8/bundles/datastar.js"
+    "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0/bundles/datastar.js"
   }
 }
 </script>
