@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/
-          cp -r dist _site/
+          cp -r dist demo _site/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
