@@ -1,4 +1,4 @@
-export type ErrorFn = (name: string, ctx?: Record<string, any>) => void;
+export type ErrorFn = (name: string, ctx?: Record<string, any>) => Error;
 export type RequirementType = "allowed" | "must" | "denied" | "exclusive";
 export type Requirement = RequirementType | {
 	key: Exclude<RequirementType, "exclusive">;
