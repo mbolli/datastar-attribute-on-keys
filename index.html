@@ -43,9 +43,9 @@
                 <summary>Install</summary>
                 <div class="panel-body">
                     <p class="label">npm</p>
-                    <pre class="code">npm install @mbolli/datastar-attribute-on-keys</pre>
+                    <pre class="code" data-lang="shell">npm install @mbolli/datastar-attribute-on-keys</pre>
                     <p class="label">Browser</p>
-                    <pre class="code">&lt;script type="importmap"&gt;
+                    <pre class="code" data-lang="html">&lt;script type="importmap"&gt;
 {
   "imports": {
     "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.4/bundles/datastar.js"
@@ -87,7 +87,7 @@
                 <p>The <code>data-on-keys</code> attribute binds keyboard events to Datastar expressions, with key combinations and modifiers.</p>
 
                 <h3>Basic syntax</h3>
-                <pre class="code"><code>data-on-keys[:key-spec][__modifier1][__modifier2]="action"</code></pre>
+                <pre class="code" data-lang="syntax"><code>data-on-keys[:key-spec][__modifier1][__modifier2]="action"</code></pre>
 
                 <h3>Key specifications</h3>
                 <p>The <code>key-spec</code> defines which keys trigger the action. It can be:</p>
@@ -166,7 +166,7 @@
                 <p class="fine">Browsers without the View Transitions API ignore the modifier.</p>
 
                 <h3>Common examples</h3>
-                <pre class="code"><code>&lt;!-- Global shortcuts --&gt;
+                <pre class="code" data-lang="html"><code>&lt;!-- Global shortcuts --&gt;
 &lt;div data-on-keys:ctrl-s="saveDocument()"&gt;&lt;/div&gt;
 &lt;div data-on-keys:escape="closeModal()"&gt;&lt;/div&gt;
 
@@ -414,6 +414,7 @@
         </div>
     </footer>
 
+    <script type="module" src="demo/highlight.js"></script>
     <script type="importmap">
         {
             "imports": {

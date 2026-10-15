@@ -170,6 +170,13 @@ kbd {
     tab-size: 4;
 }
 .code code { background: none; padding: 0; font-size: inherit; color: inherit; }
+.hl-keyword { color: #f0a77f; }
+.hl-value { color: #a8dcb9; }
+.hl-comment { color: #7d948d; font-style: italic; }
+.hl-type, .hl-attribute { color: #8cc8f0; }
+.hl-property { color: #e6d58e; }
+.hl-variable { color: #d7b8f3; }
+.hl-operator { color: #f0a77f; }
 .sidebar .code { font-size: .7rem; padding: .7rem .8rem; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
 
 /* demo output */
