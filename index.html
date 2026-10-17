@@ -27,26 +27,26 @@
 <body>
     <header class="page-head">
         <div class="wrap">
-            <p class="eyebrow">Datastar plugin</p>
-            <h1>data-on-keys</h1>
-            <p class="lead">Bind keyboard events to Datastar expressions, with key combinations, several keys per binding and timing modifiers.</p>
-            <div class="btn-row">
-                <a href="https://github.com/mbolli/datastar-attribute-on-keys" class="btn">GitHub</a>
-                <a href="https://www.npmjs.com/package/@mbolli/datastar-attribute-on-keys" class="btn btn-ghost">npm</a>
-                <a href="https://data-star.dev" class="btn btn-ghost">Datastar docs</a>
-            </div>
-        </div>
-    </header>
-
-    <div class="wrap layout">
-        <aside class="sidebar">
-            <details class="panel" open>
-                <summary>Install</summary>
-                <div class="panel-body">
-                    <p class="label">npm</p>
-                    <pre class="code" data-lang="shell">npm install @mbolli/datastar-attribute-on-keys</pre>
-                    <p class="label">Browser</p>
-                    <pre class="code" data-lang="html">&lt;script type="importmap"&gt;
+            <div class="head-grid">
+                <div class="head-main">
+                    <p class="eyebrow">Datastar plugin</p>
+                    <h1>data-on-keys</h1>
+                    <p class="lead">Bind keyboard events to Datastar expressions, with key combinations, several keys per binding and timing modifiers.</p>
+                    <div class="btn-row">
+                        <a href="https://github.com/mbolli/datastar-attribute-on-keys" class="btn">GitHub</a>
+                        <a href="https://www.npmjs.com/package/@mbolli/datastar-attribute-on-keys" class="btn btn-ghost">npm</a>
+                        <a href="https://data-star.dev" class="btn btn-ghost">Datastar docs</a>
+                    </div>
+                </div>
+                <aside class="install" aria-labelledby="install-title">
+                    <p class="install-title" id="install-title">Install</p>
+                    <div class="snippet">
+                        <div class="snippet-head"><p class="label">npm</p><button type="button" class="copy" data-on:click="navigator.clipboard.writeText(el.closest('.snippet').querySelector('pre').textContent).then(() => { el.textContent = 'Copied'; setTimeout(() => el.textContent = 'Copy', 1500) })">Copy</button></div>
+                        <pre class="code" data-lang="shell">npm install @mbolli/datastar-attribute-on-keys</pre>
+                    </div>
+                    <div class="snippet">
+                        <div class="snippet-head"><p class="label">Browser, import map first</p><button type="button" class="copy" data-on:click="navigator.clipboard.writeText(el.closest('.snippet').querySelector('pre').textContent).then(() => { el.textContent = 'Copied'; setTimeout(() => el.textContent = 'Copy', 1500) })">Copy</button></div>
+                        <pre class="code" data-lang="html">&lt;script type="importmap"&gt;
 {
   "imports": {
     "datastar": "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.4/bundles/datastar.js"
@@ -54,8 +54,14 @@
 }
 &lt;/script&gt;
 &lt;script type="module" src="https://cdn.jsdelivr.net/npm/@mbolli/datastar-attribute-on-keys@1/dist/index.js"&gt;&lt;/script&gt;</pre>
-                </div>
-            </details>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrap layout">
+        <aside class="sidebar">
             <details class="panel" open>
                 <summary>Contents</summary>
                 <div class="panel-body">

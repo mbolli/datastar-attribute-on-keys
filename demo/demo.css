@@ -266,3 +266,46 @@ dialog h3 { margin-top: 0; }
 .maintainer { font: 500 .8rem/1.5 var(--mono); }
 .split:has(> .counter + .readout) { margin: 1rem 0; align-items: stretch; }
 .split > .counter, .split > .readout { margin: 0; display: grid; place-items: center; }
+
+/* header: intro on the left, install on the right */
+.head-grid { display: grid; gap: 2rem; }
+@media (min-width: 62rem) { .head-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 27rem); align-items: center; gap: 3.5rem; } }
+.head-main { min-width: 0; }
+.head-main > :last-child { margin-bottom: 0; }
+.install {
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) + 2px);
+    padding: 1rem 1.1rem 1.15rem;
+    box-shadow: 0 1.25rem 2.5rem -2rem color-mix(in oklab, var(--brand) 45%, transparent);
+}
+.install-title { margin: 0 0 .6rem; font: 600 .78rem/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.snippet + .snippet { margin-top: .9rem; }
+.snippet-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .35rem; }
+.snippet-head .label { margin: 0; }
+.snippet .code {
+    margin: 0;
+    font-size: .74rem;
+    line-height: 1.55;
+    padding: .75rem .9rem;
+    white-space: pre;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--code-ink) 35%, transparent) transparent;
+}
+.copy {
+    flex: none;
+    padding: .28rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--muted);
+    font: 500 .68rem/1 var(--mono);
+    letter-spacing: .04em;
+    cursor: pointer;
+}
+.copy:hover { border-color: var(--accent); color: var(--accent); }
+
+/* left navigation: slim scrollbar in the accent colour */
+.sidebar { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; overscroll-behavior: contain; }
